@@ -1,0 +1,78 @@
+---
+title: "Assignment 2"
+author: "Yiwei Huang"
+date: '2023'
+output:
+  pdf_document: default
+  word_document: default
+  html_document:
+    df_print: paged
+---
+# Section 1: Descrption of the data
+The dataset is measuing housing price in in the suburbs of chicago and features of the houses. The data was uploaded to Kaggle and made public. 
+
+The research questions this data could help to answer is what features contribute to the housing price in Chicago most? 
+
+It's saved in csv format. It's delimited by comma.
+
+# Section 2: Reading the data into R
+
+```{r, echo = TRUE}
+#use read.csv to read in the data, it's a base R function
+df <- read.csv('~/Downloads/realest.csv')
+```
+
+# Section 3: Clean the data
+```{r, echo = TRUE}
+#rename col
+library(dplyr)
+df1 = rename(df,Squarefeet=Space)
+#get rid of lot col
+df1 = select(df1,-Lot)
+```
+
+# Section 4: Characteristics of the data
+```{r, echo = TRUE}
+#This next chunk is inline code. Inline code puts the text with the output of the function in my document.
+library(knitr)
+#Create a dataframe with column names and brief descriptions
+data <- data.frame(
+  Column_Name = c("Price", "Bedroom", "Room", "Space",
+                  "Lot","Tax","Bathroom","Garage","Condition"),
+  Description = c("price of house",
+                  "number of bedrooms",
+                  "number of rooms",
+                  "size of house (in square feet)",
+                  "width of a lot",
+                  "amount of annual tax",
+                  "number of bathrooms",
+                  "number of garage",
+                  "condition of house (1 if good , 0 otherwise)")
+)
+```
+This dataframe has `r nrow(df)` rows and `r ncol(df)` columns. The names of the columns and a brief description of each are in the table below:
+`r kable(data, col.names = c("Column Name", "Description"), format = "markdown")``
+
+# Section 5: Summary statistics
+
+```{r, echo = TRUE}
+# Pick three columns of the dataframe
+df_3cols = select(df,Bedroom, Bathroom, Garage)
+# Use a summary function to get the following summaries of these columns
+get_summary <- function(x) {
+  result <- c(
+    min_value = min(x, na.rm = TRUE),
+    max_value = max(x, na.rm = TRUE),
+    mean_value = mean(x, na.rm = TRUE),
+    num_missing = sum(is.na(x))
+  )
+  return(result)
+}
+bedroom_summary <- get_summary(df_3cols$Bedroom)
+bathroom_summary <- get_summary(df_3cols$Bathroom)
+garage_summary <- get_summary(df_3cols$Garage)
+
+final_summary <- rbind(bedroom_summary, bathroom_summary, garage_summary)
+print(final_summary)
+
+```
